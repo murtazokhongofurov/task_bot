@@ -38,12 +38,11 @@ func (h *BotHandler) Start() {
 
     u.Timeout = 60
 
-    _ = h.bot.GetUpdatesChan(u)
+    updates := h.bot.GetUpdatesChan(u)
 
-    // for update := range updates {
-    //     go 
-    // }
-
+    for update := range updates {
+        go h.HandleBot(update)
+    }
 }
 
 func (h *BotHandler) HandleBot(update tgbotapi.Update) {
