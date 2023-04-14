@@ -53,10 +53,12 @@ func (h *BotHandler) HandleBot(update tgbotapi.Update) {
     }
 
     if update.Message.Command() == "start" {
-        
+        err = h.DisplayEnterFullNameMenu(user)
+        if err != nil {
+            log.Println("Error while display fullname: ", err.Error())
+        }
     }
 }
-
 
 func (h *BotHandler) SendMessage(user *models.User, message string) {
 	msg := tgbotapi.NewMessage(user.TgId, message)
