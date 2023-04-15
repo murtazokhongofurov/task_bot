@@ -61,7 +61,16 @@ func (h *BotHandler) HandleBot(update tgbotapi.Update) {
        if err != nil {
             log.Println("Error /admin start: ", err.Error())
        }
+    } else if update.Message.Text != "" {
+        switch user.Step {
+        case storage.ChangeRole:
+            err = h.HandleEnterUsers(user, update.Message.Text)
+            CheckError(err)
+        default:
+            h.SendMessage(user, errorMessage)
+        }
     }
+   
 }
 
 func (h *BotHandler) SendMessage(user *models.User, message string) {
@@ -71,3 +80,8 @@ func (h *BotHandler) SendMessage(user *models.User, message string) {
 	}
 }
 
+func CheckError(err error) {
+    if err != nil {
+        log.Println(err)
+    }
+}

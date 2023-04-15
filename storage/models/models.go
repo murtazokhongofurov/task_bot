@@ -11,4 +11,12 @@ type User struct {
 	CreateAt *time.Time
 }
 
+type UserForList struct {
+	TgName string
+}
+
+type AllUsers struct {
+	Users []UserForList 
+}
+
 

@@ -8,6 +8,11 @@ import (
 	"gitlab.com/task_bot/storage/models"
 )
 
+const (
+	page = 1
+	limit = 10
+)
+
 
 
 
@@ -78,4 +83,22 @@ func (b *storagePg) ChangeStep(TgId int64, step string) error {
 		return sql.ErrNoRows
 	}
 	return nil
+}
+
+func (b *storagePg) GetAllUsers(page, limit int) (*models.AllUsers, error) {
+	var res models.AllUsers
+
+	rows, err := b.db.Query(`SELECT tg_name FROM users LIMIT ? OFFSET ?`, limit, (page-1) * limit)
+	if err != nil {
+		return &models.AllUsers{}, err
+	}
+	for rows.Next() {
+		temp := models.UserForList{}
+		err = rows.Scan(&temp.TgName)
+		if err != nil {
+			return &models.AllUsers{}, err
+		}
+		res.Users = append(res.Users, temp)
+	}
+	return &res, nil
 }
