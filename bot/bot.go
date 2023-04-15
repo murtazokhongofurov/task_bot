@@ -39,7 +39,6 @@ func (h *BotHandler) Start() {
     u.Timeout = 60
 
     updates := h.bot.GetUpdatesChan(u)
-
     for update := range updates {
         go h.HandleBot(update)
     }
@@ -52,10 +51,16 @@ func (h *BotHandler) HandleBot(update tgbotapi.Update) {
     }
 
     if update.Message.Command() == "start" {
-        err = h.DisplayEnterFullNameMenu(user)
+        err = h.DisplayWelcome(user)
         if err != nil {
-            log.Println("Error while display fullname: ", err.Error())
+            log.Println("Error while welcome to bot: ", err.Error())
         }
+    }
+    if update.Message.Command() == "admin" {
+       err = h.DisplayAdminPage(user)
+       if err != nil {
+            log.Println("Error /admin start: ", err.Error())
+       }
     }
 }
 
@@ -66,31 +71,3 @@ func (h *BotHandler) SendMessage(user *models.User, message string) {
 	}
 }
 
-// func main() {
-
-//     bot, err := tgbotapi.NewBotAPI("5707916239:AAGJoPr07ddUYl6_Osvbb5A3XtGYHZphPD8")
-//     if err != nil {
-//         log.Fatal(err)
-//     }
-
-//     bot.Debug = true
-
-//     log.Printf("Authorized on account %s", bot.Self.UserName)
-//     u := tgbotapi.NewUpdate(0)
-//     u.Timeout = 60
-
-//     updates, err := bot.GetUpdatesChan(u)
-// 	if err != nil {
-// 		log.Println("Error while GetUpdateChan(u)", err.Error())
-// 	}
-
-//     for update := range updates {
-// 		fmt.Println("Message ====>>>> \n", update.Message.Chat.FirstName)
-//         if update.Message == nil {
-//             continue
-//         }
-
-//         msg := tgbotapi.NewMessage(update.Message.Chat.ID, "You said: " + update.Message.Text)
-//         bot.Send(msg)
-//     }
-// }

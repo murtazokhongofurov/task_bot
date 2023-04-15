@@ -9,13 +9,26 @@ import (
 )
 
 
-func (h *BotHandler)  DisplayEnterFullNameMenu(user *models.User) error {
-	err := h.strg.ChangeStep(user.TgId, storage.EnterFullnameStep)
+func (h *BotHandler)  DisplayWelcome(user *models.User) error {
+	err := h.strg.ChangeStep(user.TgId, storage.EnterStartingStep)
 	if err != nil {
 		return err
 	}
-	msg := tgbotapi.NewMessage(user.TgId, "Ism Familiyangizni kiriting ⬇️")
+	msg := tgbotapi.NewMessage(user.TgId, startMessage)
 	msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
+	if _, err := h.bot.Send(msg); err != nil {
+		log.Println(err)
+	}
+	return nil
+}
+
+func (h *BotHandler) DisplayAdminPage(user *models.User) error {
+	err := h.strg.ChangeStep(user.TgId, storage.ChangeRole)
+	if err != nil {
+		return err
+	}
+	msg := tgbotapi.NewMessage(user.TgId, adminStartMessage)
+	msg.ReplyMarkup = adminMenuKeyboards
 	if _, err := h.bot.Send(msg); err != nil {
 		log.Println(err)
 	}

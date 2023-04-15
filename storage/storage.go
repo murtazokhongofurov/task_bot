@@ -2,12 +2,13 @@ package storage
 
 import (
 	"database/sql"
+
 	"gitlab.com/task_bot/storage/models"
 )
 
 const (
-	EnterFullnameStep    string = "enter_fullname"
-	EnterPhoneNumberStep string = "enter_phone_number"
+	EnterStartingStep    string = "starting_step"
+	ChangeRole 			 string = "change_role"
 	RegisteredStep       string = "registered"
 )
 
