@@ -55,8 +55,7 @@ func (h *BotHandler) HandleBot(update tgbotapi.Update) {
         if err != nil {
             log.Println("Error while welcome to bot: ", err.Error())
         }
-    }
-    if update.Message.Command() == "admin" {
+    }else if update.Message.Command() == "admin" {
        err = h.DisplayAdminPage(user)
        if err != nil {
             log.Println("Error /admin start: ", err.Error())
@@ -64,7 +63,7 @@ func (h *BotHandler) HandleBot(update tgbotapi.Update) {
     } else if update.Message.Text != "" {
         switch user.Step {
         case storage.ChangeRole:
-            err = h.HandleEnterUsers(user, update.Message.Text)
+            err = h.HandleGetUsers(user, update.Message.Text)
             CheckError(err)
         default:
             h.SendMessage(user, errorMessage)

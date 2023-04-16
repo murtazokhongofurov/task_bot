@@ -3,6 +3,7 @@ package bot
 import (
 	"bytes"
 	"log"
+	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"gitlab.com/task_bot/storage"
@@ -39,7 +40,7 @@ func (h *BotHandler) DisplayAdminPage(user *models.User) error {
 }
 
 
-func (h *BotHandler) HandleEnterUsers(user *models.User, text string) error {
+func (h *BotHandler) HandleGetUsers(user *models.User, text string) error {
 	if text == adminGetUsers {
 		return h.DisplayAllUsers(user)
 	}
@@ -52,15 +53,20 @@ func (h *BotHandler) DisplayAllUsers(user *models.User) error {
 		return err
 	}
 	var buf bytes.Buffer
+	k, number := 1, ""
 	for i, usertgname := range info.Users {
 		if i > 0 {
 			buf.WriteString("\n")
 		}
-		buf.WriteString(usertgname.TgName)
+		number = strconv.Itoa(k)
+		buf.WriteString(number +"." + usertgname.TgName)
+		k++
 		userNameString := buf.String()
-		msg := tgbotapi.NewMessage(user.TgId, userNameString)
-		if _, err := h.bot.Send(msg); err != nil {
-			return err
+		if len(info.Users) == i+1 {
+			msg := tgbotapi.NewMessage(user.TgId, userNameString)
+			if _, err := h.bot.Send(msg); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
