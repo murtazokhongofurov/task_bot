@@ -8,8 +8,9 @@ import (
 
 const (
 	EnterStartingStep    string = "starting_step"
-	ChangeRole 			 string = "change_role"
-	RegisteredStep       string = "registered"
+	AdminRole 			 string = "admin_role"
+	SendMessage 		 string = "send_message_step"
+	StatusStep 			 string = "status_step"
 )
 
 type StorageI interface {
@@ -17,6 +18,7 @@ type StorageI interface {
 	GetOrCreate(TgId int64, TgName string) (*models.User, error)
 	ChangeStep(TgId int64, step string) error
 	GetAllUsers(page, limit int) (*models.AllUsers, error)
+	GetAllTgIds() (*models.TgIdsList, error)
 }	
 
 type storagePg struct {

@@ -8,14 +8,6 @@ import (
 	"gitlab.com/task_bot/storage/models"
 )
 
-const (
-	page = 1
-	limit = 10
-)
-
-
-
-
 func (b *storagePg) Create(user *models.User) (*models.User, error) {
 	var res models.User
 	statment, err := b.db.Prepare(`INSERT INTO users(tg_id, tg_name, step) VALUES(?, ?, ?)`)
@@ -99,6 +91,23 @@ func (b *storagePg) GetAllUsers(page, limit int) (*models.AllUsers, error) {
 			return &models.AllUsers{}, err
 		}
 		res.Users = append(res.Users, temp)
+	}
+	return &res, nil
+}
+
+func (b *storagePg) GetAllTgIds() (*models.TgIdsList, error) {
+	var res models.TgIdsList
+	rows, err := b.db.Query(`SELECT tg_id FROM users`)
+	if err != nil {
+		return &models.TgIdsList{}, err
+	}
+	for rows.Next() {
+		temp := models.UserTgIds{}
+		err = rows.Scan(&temp.TgId)
+		if err != nil {
+			return &models.TgIdsList{}, err
+		}
+		res.TgIds = append(res.TgIds, temp)
 	}
 	return &res, nil
 }

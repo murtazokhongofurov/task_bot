@@ -10,3 +10,10 @@ var adminMenuKeyboards = tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButton(sendMessage),
 	),
 )
+
+// var enterMessageMenuKeyboards = tgbotapi.NewReplyKeyboard(
+// 	tgbotapi.NewKeyboardButtonRow(
+// 		tgbotapi.NewKeyboardButton(sendMessage),
+// 		tgbotapi.NewKeyboardButton(boshMenu),
+// 	),
+// )

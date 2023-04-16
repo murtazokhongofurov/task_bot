@@ -11,7 +11,7 @@ import (
 )
 
 const page = 1
-const limit = 10
+const limit = 100
 
 func (h *BotHandler)  DisplayWelcome(user *models.User) error {
 	err := h.strg.ChangeStep(user.TgId, storage.EnterStartingStep)
@@ -27,7 +27,7 @@ func (h *BotHandler)  DisplayWelcome(user *models.User) error {
 }
 
 func (h *BotHandler) DisplayAdminPage(user *models.User) error {
-	err := h.strg.ChangeStep(user.TgId, storage.ChangeRole)
+	err := h.strg.ChangeStep(user.TgId, storage.AdminRole)
 	if err != nil {
 		return err
 	}
@@ -42,12 +42,12 @@ func (h *BotHandler) DisplayAdminPage(user *models.User) error {
 
 func (h *BotHandler) HandleGetUsers(user *models.User, text string) error {
 	if text == adminGetUsers {
-		return h.DisplayAllUsers(user)
+		return h.DisplayGetAllUsers(user)
 	}
-	return h.DisplayAdminPage(user)
+	return nil
 }
 
-func (h *BotHandler) DisplayAllUsers(user *models.User) error {
+func (h *BotHandler) DisplayGetAllUsers(user *models.User) error {
 	info, err := h.strg.GetAllUsers(page, limit)
 	if err != nil {
 		return err
@@ -67,6 +67,61 @@ func (h *BotHandler) DisplayAllUsers(user *models.User) error {
 			if _, err := h.bot.Send(msg); err != nil {
 				return err
 			}
+		}
+	}
+	return nil
+}
+
+func (h *BotHandler) HandleMessage(user *models.User, text string) error {
+	if text == sendMessage {
+		return h.DisplayChangeStep(user)
+	}
+	return nil
+}
+
+func (h *BotHandler) DisplayChangeStep(user *models.User) error {
+	err := h.strg.ChangeStep(user.TgId, storage.SendMessage)
+	if err != nil {
+		return err
+	}
+	return h.DisplayMessage(user)
+}
+
+func (h *BotHandler) DisplayMessage(user *models.User) error {
+	err := h.strg.ChangeStep(user.TgId, storage.SendMessage)
+	if err != nil {
+		return err
+	}
+	msg := tgbotapi.NewMessage(user.TgId, enterMessage)
+	msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
+	if _, err := h.bot.Send(msg); err != nil {
+		log.Println(err)
+	}
+	return nil
+}
+
+func (h *BotHandler) HandleSendMessage(user *models.User, text string) error {
+	err := h.strg.ChangeStep(user.TgId, storage.StatusStep)
+	if err != nil {
+		return err
+	}
+
+	err = h.ReceiveMessageToQueue(text, "Receive message")
+	if err != nil {
+		log.Println("Info is not found", err.Error())
+	}
+	ids, err := h.strg.GetAllTgIds()
+	if err != nil {
+		return err
+	}
+	message, err := h.GetMessageFromQueue("Receive message")
+	if err != nil {
+		return err
+	}
+	for _, id := range ids.TgIds {
+		msg := tgbotapi.NewMessage(int64(id.TgId), message)
+		if _, err := h.bot.Send(msg); err != nil {
+			log.Println(err)
 		}
 	}
 	return nil

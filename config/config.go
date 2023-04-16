@@ -12,6 +12,7 @@ import (
 type Config struct {
 	BotToken string 
 	SqliteUrl string
+	RabbitMqUrl string
 }
 
 func Load() Config {
@@ -24,6 +25,7 @@ func Load() Config {
 
 	c.BotToken = cast.ToString(getOrReturnDefault("BOT_TOKEN", "bot_token"))
 	c.SqliteUrl = cast.ToString(getOrReturnDefault("SQLITE_URL", "sqlite_url"))
+	c.RabbitMqUrl = cast.ToString(getOrReturnDefault("RABBITMQ_URL", "amqp://user:password@rabbitmq-server:5672/"))
 	return c
 }
 

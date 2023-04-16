@@ -6,6 +6,7 @@ import (
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/streadway/amqp"
 	"gitlab.com/task_bot/bot"
 	"gitlab.com/task_bot/config"
 	"gitlab.com/task_bot/storage"
@@ -30,9 +31,22 @@ func main() {
 		log.Println("Error while creating table", err.Error())
 	}
 	statment.Exec()
+
 	strg := storage.NewStoragePg(db)
+	conn, err := amqp.Dial(cfg.RabbitMqUrl)
+	fmt.Println("=====================>>>>>>>>>>>>> ", conn,"|||||||||", err.Error())
+	if err != nil {
+		log.Println("Error while connecting rabbitmq")
+	}
+	defer conn.Close()
 
-	botHandler := bot.New(cfg, strg)
+	ch, err := conn.Channel()
+	if err != nil {
+		log.Fatal("Error connecting rabbitmq", err.Error())
+	}
+	defer ch.Close()
+	botHandler := bot.New(cfg, strg, ch)
 
+	
 	botHandler.Start()
 }

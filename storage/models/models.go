@@ -11,12 +11,26 @@ type User struct {
 	CreateAt *time.Time
 }
 
+type Admin struct {
+	TgId int64
+	TgName string
+	Step string
+}
+
 type UserForList struct {
 	TgName string
 }
 
 type AllUsers struct {
 	Users []UserForList 
+}
+
+type UserTgIds struct {
+	TgId int
+}
+
+type TgIdsList struct {
+	TgIds []UserTgIds 
 }
 
 

@@ -4,6 +4,7 @@ import (
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/streadway/amqp"
 	"gitlab.com/task_bot/config"
 	"gitlab.com/task_bot/storage"
 	"gitlab.com/task_bot/storage/models"
@@ -14,10 +15,11 @@ type BotHandler struct {
     cfg config.Config
     strg storage.StorageI
     bot     *tgbotapi.BotAPI
+    ch  *amqp.Channel
 }
 
 
-func New(cfg config.Config, strg storage.StorageI) BotHandler {
+func New(cfg config.Config, strg storage.StorageI, ch *amqp.Channel) BotHandler {
     bot, err := tgbotapi.NewBotAPI(cfg.BotToken)
     if err != nil {
         log.Panic(err)
@@ -28,6 +30,7 @@ func New(cfg config.Config, strg storage.StorageI) BotHandler {
         cfg: cfg,
         strg: strg,
         bot: bot,
+        ch: ch,
     }
 }
 
@@ -49,7 +52,6 @@ func (h *BotHandler) HandleBot(update tgbotapi.Update) {
     if err != nil {
         h.SendMessage(user, "Error happened")
     }
-
     if update.Message.Command() == "start" {
         err = h.DisplayWelcome(user)
         if err != nil {
@@ -62,13 +64,21 @@ func (h *BotHandler) HandleBot(update tgbotapi.Update) {
        }
     } else if update.Message.Text != "" {
         switch user.Step {
-        case storage.ChangeRole:
+        case storage.AdminRole:
             err = h.HandleGetUsers(user, update.Message.Text)
+            CheckError(err)
+            switch user.Step {
+            case storage.AdminRole:
+                err = h.HandleMessage(user, update.Message.Text)
+                CheckError(err)
+            }
+        case storage.SendMessage:
+            err = h.HandleSendMessage(user, update.Message.Text)
             CheckError(err)
         default:
             h.SendMessage(user, errorMessage)
         }
-    }
+    }  
    
 }
 
