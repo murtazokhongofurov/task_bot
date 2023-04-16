@@ -6,14 +6,6 @@ import (
 var adminMenuKeyboards = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton(adminGetUsers),
-		tgbotapi.NewKeyboardButton(messageStatus),
 		tgbotapi.NewKeyboardButton(sendMessage),
 	),
 )
-
-// var enterMessageMenuKeyboards = tgbotapi.NewReplyKeyboard(
-// 	tgbotapi.NewKeyboardButtonRow(
-// 		tgbotapi.NewKeyboardButton(sendMessage),
-// 		tgbotapi.NewKeyboardButton(boshMenu),
-// 	),
-// )

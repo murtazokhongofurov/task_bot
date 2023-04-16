@@ -112,3 +112,12 @@ func (b *storagePg) GetAllTgIds() (*models.TgIdsList, error) {
 	}
 	return &res, nil
 }
+
+func (b *storagePg) GetUserCount() (*models.TgUserCount, error) {
+	res := models.TgUserCount{}
+	err := b.db.QueryRow(`SELECT count(*) as count FROM users`).Scan(&res.Count)
+	if err != nil {
+		return &models.TgUserCount{}, err
+	}
+	return &res, nil
+}

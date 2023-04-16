@@ -33,4 +33,7 @@ type TgIdsList struct {
 	TgIds []UserTgIds 
 }
 
+type TgUserCount struct {
+	Count int64
+}
 

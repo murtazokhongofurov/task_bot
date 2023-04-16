@@ -4,7 +4,6 @@ import (
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/streadway/amqp"
 	"gitlab.com/task_bot/config"
 	"gitlab.com/task_bot/storage"
 	"gitlab.com/task_bot/storage/models"
@@ -15,11 +14,11 @@ type BotHandler struct {
     cfg config.Config
     strg storage.StorageI
     bot     *tgbotapi.BotAPI
-    ch  *amqp.Channel
+    // ch  *amqp.Channel
 }
 
 
-func New(cfg config.Config, strg storage.StorageI, ch *amqp.Channel) BotHandler {
+func New(cfg config.Config, strg storage.StorageI) BotHandler {
     bot, err := tgbotapi.NewBotAPI(cfg.BotToken)
     if err != nil {
         log.Panic(err)
@@ -30,7 +29,7 @@ func New(cfg config.Config, strg storage.StorageI, ch *amqp.Channel) BotHandler 
         cfg: cfg,
         strg: strg,
         bot: bot,
-        ch: ch,
+        // ch: ch,
     }
 }
 
@@ -73,7 +72,7 @@ func (h *BotHandler) HandleBot(update tgbotapi.Update) {
                 CheckError(err)
             }
         case storage.SendMessage:
-            err = h.HandleSendMessage(user, update.Message.Text)
+            err = h.HandleSendMessage(user, update.Message.Text, update.Message.MessageID)
             CheckError(err)
         default:
             h.SendMessage(user, errorMessage)

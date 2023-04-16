@@ -19,6 +19,7 @@ type StorageI interface {
 	ChangeStep(TgId int64, step string) error
 	GetAllUsers(page, limit int) (*models.AllUsers, error)
 	GetAllTgIds() (*models.TgIdsList, error)
+	GetUserCount() (*models.TgUserCount, error)
 }	
 
 type storagePg struct {
