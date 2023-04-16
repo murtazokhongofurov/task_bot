@@ -24,7 +24,8 @@ func (b *storagePg) Create(user *models.User) (*models.User, error) {
 		return nil , err
 	}
 
-	err = b.db.QueryRow(`SELECT tg_id, tg_name, step FROM users WHERE tg_id = ?`, id).Scan(&res.TgId, &res.TgName, &res.Step)
+	err = b.db.QueryRow(`SELECT tg_id, tg_name, step FROM users WHERE tg_id = ?`, id).
+	Scan(&res.TgId, &res.TgName, &res.Step)
 	if err != nil {
 		return &models.User{}, err
 	}
